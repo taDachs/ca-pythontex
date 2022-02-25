@@ -1,0 +1,27 @@
+\documentclass{article}
+
+\usepackage{pythontex}
+\usepackage{environ}
+
+% played too much codegolf
+\begin{pycode}
+def rec_rule(n,t,s):
+    r=lambda g,t,i:["  & "*i+" & ".join(g)+" &  "*i+r" \\"]+(r("".join([f"{n:08b}"[::-1][int(g[j-2:j+1],2)]for j in range(2,len(g))]),t-1,i+1)if t>0 else[r"\end{tabular}"])
+    return"\n".join([r"\begin{tabular}{ "+"c "*(len(s)+2*t)+"}"]+r("0"*t+s+"0"*t,t,0))
+\end{pycode}
+
+\newcommand{\tableCA}[3]{
+  \py{rule(#1, #2, "#3")}
+}
+
+\begin{document}
+
+% \tableCA{110}{3}{00101101001}
+\begin{tabular}{ c c c c c c c c c c c c c c c c c }
+  & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 0 &  \\
+  &   & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 &   &  \\
+  &   &   & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 1 &   &   &  \\
+  &   &   &   & 1 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 1 &   &   &   &  \\
+\end{tabular}
+
+\end{document}
