@@ -1,4 +1,4 @@
 # Latex-Pythontex
 
-call `bash ./build_doc.sh` -> replace with make file
+Simply call `make` to build or `make clean` to clean up.
 
