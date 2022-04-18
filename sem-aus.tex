@@ -6,6 +6,7 @@
 
 \usepackage{pythontex}
 \usepackage{xcolor}
+\usepackage{url}
 
 \usepackage{amsmath}
 \usepackage{float}
@@ -162,7 +163,7 @@ anderer unverändert oder mit Abänderungen entnommen wurde.
 
 %-----------------------------------------------------------------------------
 \section{Einleitung}
-\pythontex ist ein \LaTeX{} Paket das es einem erlaubt Python Code innerhalb eines \LaTeX{} Dokumentes zu verwenden und dessen Ausgabe auch in dem Dokument darzustellen.
+\pythontex{} \cite{pythontex-paper} ist ein \LaTeX{} Paket das es einem erlaubt Python Code innerhalb eines \LaTeX{} Dokumentes zu verwenden und dessen Ausgabe auch in dem Dokument darzustellen.
 %
 Das Paket erlaubt es dem Nutzer den Code direkt neben seiner Ausgabe zu speichern.
 %
@@ -172,6 +173,7 @@ Das erzeugt einen hohen Grad an Reproduzierbarkeit.
 %
 Normalerweise wird Reproduzierbarkeit nur erreicht, indem man den verwendeten Programm Code seperat verbreitet.
 %
+Dies ist aber nicht immer der Fall (was Projekte wie \emph{Papers without Code}\cite{paperswithoutcode} oder Studien wie \cite{reproducible-study} und \cite{StateofReproducible} nur unterstreichen), vorallem in den Bereichen Künstlicher Intelligenz und Data Science, welche fast vorwiegend Python verwenden.
 \\
 %
 Die Einbindung des Codes in das Dokument ist vielfältig, so kann man zum Beispiel mit Hilfe des \verb+\py+ Befehls direkt Python Code im Dokument ausführen.
@@ -186,10 +188,10 @@ Die Einbindung des Codes in das Dokument ist vielfältig, so kann man zum Beispi
 %
 Es ist verfügbar in \texttt{\TeX{} Live} und \texttt{MiK\TeX{}}.
 %
-\todo{quelle für studie über Reproduzierbarkeit, sowas wie https://elifesciences.org/articles/23383 aber mehr computer, weniger krebs}
-
 \section{Das Paket \pythontex{}}
 \pythontex{} stellt eine Reihe an nützlichen Umgebungen und Befehlen bereit, hier werden allerdings nur die wichtigsten behandelt.
+%
+Alle Befehle und Umgebungen werden für den interessierten Leser in \cite{pythontex-paper} sehr ausführlich beschrieben.
 %
 Die wichtigsten sind:
 %
@@ -197,11 +199,10 @@ Die wichtigsten sind:
   \item \verb#\py# - Führt den gegebenen Code aus und gibt die Ausgabe zurück.
   \item \verb#\pyc# - Führt den gegebenen Code aus, gibt nur \pyb{print} Aufrufe aus. Im Gegensatz zu \verb#\py# wird nicht die direkte Ausgabe mit zurückgegeben.
   \begin{itemize}
-    \item \verb#\py{"foo".upper()}# -> \py{"foo".upper()}
-    \item \verb#\pyc{"foo".upper()}# -> Keine Ausgabe, um die gleiche Ausgabe zu erhalten müsste \verb#\pyc{print("foo".upper())}# aufgerufen werden.
+    \item \verb#\py{"foo".upper()}# \textrightarrow\ \py{"foo".upper()}
+    \item \verb#\pyc{"foo".upper()}# \textrightarrow\  Keine Ausgabe, um die gleiche Ausgabe zu erhalten müsste \verb#\pyc{print("foo".upper())}# aufgerufen werden.
   \end{itemize}
-    \todo{fix arrows}
-  \item \verb#\pyb# - Führt den gegebenen Code aus und formatiert ihn. Die Ausgabe kann später mittels \verb#\printpythontex# ausgegeben werden.  \todo{pyb klingt kacke, zweimal ausgabe}
+  \item \verb#\pyb# - Führt den gegebenen Code aus und formatiert ihn. Die Ausgabe kann später mittels \verb#\printpythontex# aufgerufen werden.
 \end{itemize}
 %
 Es gibt noch einige Umgebungen, diese entsprechen teilweise einem der vorangegangen Befehle.
@@ -219,26 +220,9 @@ Diesen Befehl kann man dann einfach mit \verb#\toUpperCase{foo}# aufrufen um die
 %
 Dabei sollte man stehts beachten das sich sämtlicher Python Code einen Namespace teilt, daher sollte man nach Möglichkeit Logik immer in Funktionen kapseln.
 %
-Ein weiterer Nachteil ist von \pythontex{} ist ein Python Problem.
-%
-Das folgende Code Stück würde zu einem Fehler führen wenn man es als normales Python Programm ausführt.
-%
-\begin{lstlisting}[language=Python]
-foo()
-
-def foo():
-  print("bar")
-\end{lstlisting}
-%
-Das Problem ist das Python kein Hoisting hat (Deklarationen werden an die Spitze ihres Scopes gezogen).
-%
-Daher ist es manchmal etwas schwer die Ausgabe eines Listings vor dem Listing selbst zu haben (als Beispiel mal Abbildung \ref{fig:rule_30_table} und Listing \ref{lst:rule_table}).
-%
-Man kann zwar eine Kopie des Codes in das Präemble schreiben, allerdings endet das in dupliziertem Code, genau das was \pythontex{} verhindern will.
-%
 \\
 %
-Die grundlegene Benutzung von \pythontex{} besteht aus wenigen Schritten.
+Das letztendliche Erzeugen des Dokuments mit \pythontex{} besteht aus wenigen Schritten.
 %
 Man verwendet das \pythontex{} Paket mittels \verb#\usepackage{pythontex}# in einem Dokument und ruft Python mit einem der beschriebenen Befehle innerhalb des Dokuments auf.
 %
@@ -254,7 +238,35 @@ Mit einem erneuten Aufruf der \LaTeX{} Engine werden nun diese Ergebnisse in das
 %
 Für dieses Dokument wurde das alles in einer Makefile zusammengefasst, welche in Listing \ref{lst:makefile} zu sehen ist.
 %
-\begin{listing}
+Da eine Abgabe eines Dokuments mit \pythontex{} eventuell nicht überall möglich ist (sei es aus kompatibilitäts oder Sicherheits Gründen) bietet \pythontex{} auch eine Möglichkeit ein Dokument zu ``depythonfizieren``, und zwar mittels des \texttt{depythontex} Programs.
+%
+Dieses ist allerdings nicht mit Benutzer-definierten \LaTeX{} Befehlen, welche \pythontex{} verwenden, kompatibel, daher ist das für dieses Dokument nicht möglich.
+\\
+%
+Ein Nachteil von \pythontex{} ist allerdings das wegfallen von Linting- und Typechecking Tools für Python.
+%
+Da so etwas wie \texttt{mypy} nicht in der Lage ist zwischen Python und \LaTeX{} Code zu unterscheiden kann es schnell schwer werden größere Projekte im Dokument selbst zu entwickeln.
+%
+Als Lösung dafür bietet \pythontex{} die Möglichkeit Code aus externen Dateien zu importieren, mit denen \texttt{mypy} wiederum arbeiten kann.
+%
+Ein weiterer Nachteil ist von \pythontex{} ist ein Python Problem.
+%
+Das folgende Code Stück würde zu einem Fehler führen wenn man es als normales Python Programm ausführt.
+%
+\begin{lstlisting}[language=Python]
+foo()
+
+def foo():
+  print("bar")
+\end{lstlisting}
+%
+Das Problem hier ist das Python kein Hoisting hat (Deklarationen werden an die Spitze ihres Scopes gezogen).
+%
+Daher ist es manchmal etwas schwer die Ausgabe eines Listings vor dem Listing selbst zu haben (als Beispiel mal Abbildung \ref{fig:rule_30_table} und Listing \ref{lst:rule_table}).
+%
+Man kann zwar eine Kopie des Codes in das Präamble schreiben, allerdings endet das in dupliziertem Code, genau das was \pythontex{} verhindern will.
+%
+\begin{listing}[t]
   \begin{lstlisting}[language=make,columns=flexible]
 build:
 	pdflatex -interaction=nonstopmode sem-aus.tex
@@ -265,13 +277,16 @@ build:
   \label{lst:makefile}
 \end{listing}
 %
+\\
+%
+\pythontex{} unterstützt neben Python auch noch Julia und Ruby, allerdings wurden diese Sprachen im Rahmen dieser Ausarbeitung nicht behandelt.
 \section{Ein paar Beispiele}
 \subsection{Zelluläre Automaten als Tabelle}
 Ein weiterer Vorteil von \pythontex{} ist die Möglichkeit, das Ergebnis von Algorithmen/Simulationen direkt zu visualisieren.
 %
 Man kann zum Beispiel die ersten Generationen eines elementaren Zellulären Automatens in einer Tabelle darstellen.
 %
-Dies ist möglich da \pythontex{} die Ausgabe direkt als \LaTeX{} interpretiert und demnach auf formattiert.
+Dies ist möglich da \pythontex{} die Ausgabe direkt als \LaTeX{} interpretiert und demnach auf formatiert.
 %
 So kann sich innerhalb einer \texttt{pyblock} Umgebung eine Funktion definieren die einen Zellulären Automaten simuliert und die Genrationen danach in eine Tabelle packt.
 %
@@ -279,29 +294,24 @@ Ein mögliches Beispiel dafür wäre Listing \ref{lst:rule_table}, das Ergebnis 
 %
 Für alle Python Listings wurde die \texttt{pyblock} Umgebung verwendet.
 %
-\begin{listing}
+\begin{listing}[h]
   \centering
   \begin{pyblock}
-def rule(n: int, t: int, seed: str) -> str:
+def rule(n, t, seed):
     seed = "0" * t + seed + "0" * t
     rule = f"{n:b}".zfill(8)[::-1]
     gens = [seed]
-
     out = f"\\begin{{tabular}}{{ {'c ' * len(seed)} }}\n"
     for i in range(t):
         prev_gen = gens[i]
         new_gen = []
         for j in range(1, len(prev_gen) - 1):
             new_gen.append(rule[int(prev_gen[j-1:j+2], 2)])
-
-        new_gen = "".join(new_gen)
-        gens.append(new_gen)
-
+        gens.append("".join(new_gen))
     for i, gen in enumerate(gens):
         out += " &  " * i
         out += " & ".join(gen)
         out += " &  " * i + r"\\" + "\n"
-
     out += r"\end{tabular}"
     return out
   \end{pyblock}
@@ -319,26 +329,22 @@ def rule(n: int, t: int, seed: str) -> str:
 \subsection{Fortgeschrittene Beispiele}
 Alternativ kann man auch anstatt einer Tabelle ein \texttt{tikz} Bild zeichnen.
 %
-Eine Beispiel dafür gibts es in Listing \ref{lst:rule_tikz} zu sehen.
+Eine Beispiel dafür gibt es in Listing \ref{lst:rule_tikz} zu sehen.
 %
 Das \texttt{tikz} Bild kann man dann mit dem \LaTeX{} Befehl \texttt{\textbackslash tikzCA\{<Regel>\}\{<Num. Gens>\}\{<seed>\}\{<Skalierung>\}} aufrufen, welcher ähnlich zu \verb#\tableCA# gebunden wurde.
 %
 \begin{listing}
   \centering
   \begin{pyblock}
-def rule_tikz(n: int, t: int, seed: str, scale: float = 1) -> str:
+def rule_tikz(n, t, seed, scale):
   rule = f"{n:b}".zfill(8)[::-1]
   gens = [seed]
-
   for i in range(t):
       prev_gen = "0" + gens[i] + "0"
       new_gen = []
       for j in range(1, len(prev_gen) - 1):
           new_gen.append(rule[int(prev_gen[j-1:j+2], 2)])
-
-      new_gen = "".join(new_gen)
-      gens.append(new_gen)
-
+      gens.append("".join(new_gen))
   out = "\\begin{tikzpicture}\n"
   out += f"\\draw[step={scale}] (0,0)" \
          + f"grid ({len(seed) * scale},{(t + 1) * scale});\n"
@@ -349,59 +355,33 @@ def rule_tikz(n: int, t: int, seed: str, scale: float = 1) -> str:
               x = j * scale
               out += f"\\fill[black] ({x}, {y})" \
                      + f" rectangle ({x + scale},{y + scale});\n"
-
   out += "\\end{tikzpicture}\n"
   return out
   \end{pyblock}
   \caption{Abwandlung von Listing \ref{lst:rule_table}. Verwendet nun \texttt{tikz} um den Zellulären Automaten zu zeichnen.}
   \label{lst:rule_tikz}
 \end{listing}
-\todo{der code Listing \ref{lst:rule_tikz} ist cringe}
-
-\begin{figure}
-  \begin{minipage}{0.2\linewidth}
-    \centering
-    \large{Rule 30}
-    \tikzCA{30}{50}{00000000000100000000000}{0.1}
-    \bigskip{}
-  \end{minipage}
-  \begin{minipage}{0.2\linewidth}
-    \centering
-    \large{Rule 110}
-    \tikzCA{110}{50}{00000000000100000000000}{0.1}
-    \bigskip{}
-  \end{minipage}
-  \begin{minipage}{0.2\linewidth}
-    \centering
-    \large{Rule 69}
-    \tikzCA{69}{50}{00000000000100000000000}{0.1}
-    \bigskip{}
-  \end{minipage}
-  \begin{minipage}{0.2\linewidth}
+%
+\begin{figure}[H]
+  \begin{minipage}{0.245\linewidth}
     \centering
     \large{Rule 12}
     \tikzCA{123}{50}{00000000000100000000000}{0.1}
-    \bigskip{}
   \end{minipage}
-  \begin{minipage}{0.22\linewidth}
+  \begin{minipage}{0.245\linewidth}
     \centering
-    \large{Rule 95}
-    \tikzCA{95}{50}{00000000000100000000000}{0.1}
+    \large{Rule 30}
+    \tikzCA{30}{50}{00000000000100000000000}{0.1}
   \end{minipage}
-  \begin{minipage}{0.22\linewidth}
+  \begin{minipage}{0.245\linewidth}
     \centering
-    \large{Rule 28}
-    \tikzCA{28}{50}{00000000000100000000000}{0.1}
+    \large{Rule 69}
+    \tikzCA{69}{50}{00000000000100000000000}{0.1}
   \end{minipage}
-  \begin{minipage}{0.22\linewidth}
+  \begin{minipage}{0.245\linewidth}
     \centering
-    \large{Rule 90}
-    \tikzCA{90}{50}{00000000000100000000000}{0.1}
-  \end{minipage}
-  \begin{minipage}{0.22\linewidth}
-    \centering
-    \large{Rule 102}
-    \tikzCA{102}{50}{00000000000100000000000}{0.1}
+    \large{Rule 110}
+    \tikzCA{110}{50}{00000000000100000000000}{0.1}
   \end{minipage}
   \label{fig:ca_tikz}
   \caption{Eine Sammlung von Zellulären Automaten, welche mit \texttt{tikz} und \pythontex{} erzeugt wurde. Alle hatten den gleichen Startwert (einzelne lebende Zelle in der Mitte) und wurden für 50 Generationen simuliert. Der Code aus Listing \ref{lst:rule_tikz} wurde hierfür verwendet.}
@@ -413,17 +393,16 @@ Ein möglicher Ansatz ist in Listing \ref{lst:gameoflife} zu sehen.
 %
 Dort wird zuerst mit einer Funktion eine List der Generationen erzeugt.
 %
-Außerdem ist eine Funktion definiert, die ein \texttt{Board} Objekt nimmt und dieses mit \texttt{tikz} darstellt.
+Außerdem ist eine Funktion namens \texttt{format\_board\_tikz} definiert, die ein \texttt{Board} Objekt (ein 2D Array von Booleans oder Integern) nimmt und dieses mit \texttt{tikz} darstellt.
 %
 Wir können das dann mit \verb#\py{format_board_tikz(<gewollte generation>)}# wieder aufrufen.
 %
-So kann man zum Beispiel einen Zyklus eines Gliders in Abbildung \ref{fig:gameoflife_glider} sehen.
-\begin{listing}
+So kann man zum Beispiel einen Zyklus eines Gliders in Abbildung \ref{fig:gameoflife_glider} erzeugen.
+%
+\begin{listing}[H]
   \centering
   \begin{pyblock}
-Board = List[List[bool]]
-
-def gameoflife(seed: Board, num_gens: int) -> List[Board]:
+def gameoflife(seed, num_gens):
     gens = [seed]
     height = len(seed)
     width = len(seed[0])
@@ -434,25 +413,17 @@ def gameoflife(seed: Board, num_gens: int) -> List[Board]:
                 alive = 0
                 for xi in range(x - 1, x + 2):
                     for yi in range(y - 1, y + 2):
-                        if gens[-1][xi % height][yi % width] and not (
-                            xi == x and yi == y
-                        ):
+                        if gens[-1][xi % height][yi % width] and \
+                           not (xi == x and yi == y):
                             alive += 1
-                if alive == 2 and cell:
-                    new_gen[x][y] = True
-                elif alive == 3:
-                    new_gen[x][y] = True
-                else:
-                    new_gen[x][y] = False
+                new_gen[x][y] = (alive == 2 and cell) or \
+                                (alive == 3)
         gens.append(new_gen)
-
     return gens
 
-
-def format_board_tikz(board: Board, scale: float = 1) -> str:
+def format_board_tikz(board, scale):
     height = len(board)
     width = len(board[0])
-
     out = "\\begin{tikzpicture}\n"
     out += f"\\draw[step={scale}] (0,0)" \
            + f"grid ({width * scale},{height * scale});\n"
@@ -463,14 +434,13 @@ def format_board_tikz(board: Board, scale: float = 1) -> str:
                 x = j * scale
                 out += f"\\fill[black] ({x}, {y})" \
                        + f" rectangle ({x + scale},{y + scale});\n"
-
     out += "\\end{tikzpicture}\n"
     return out
   \end{pyblock}
-  \caption{Code um Conway's Game of Life zu simulieren.}
+  \caption{Code um Conway's Game of Life zu simulieren und mit \texttt{tikz} zu zeichnen.}
   \label{lst:gameoflife}
 \end{listing}
-
+%
 \begin{pycode}
 glider = [
     [0, 0, 0, 0, 0, 0, 0],
@@ -482,29 +452,10 @@ glider = [
     [0, 0, 0, 0, 0, 0, 0],
 ]
 
-beacon = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 0, 0, 0],
-    [0, 1, 1, 0, 0, 0],
-    [0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0],
-]
-
-blinker = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0],
-]
-
 glidergens = gameoflife(glider, 5)
-beacongens = gameoflife(beacon, 5)
-blinkergens = gameoflife(blinker, 5)
 \end{pycode}
 
-\begin{figure}
+\begin{figure}[H]
   \centering
   \begin{minipage}{0.19\linewidth}
     \centering
@@ -529,15 +480,24 @@ blinkergens = gameoflife(blinker, 5)
   \caption{Die ersten fünf Generationen eines Gliders in Game of Life. Erzeugt mit dem Code aus Listing \ref{lst:gameoflife}.}
   \label{fig:gameoflife_glider}
 \end{figure}
+%
+Es ist auch möglich mit Bibliotheken wie \texttt{matplotlib} Graphen zu erzeugen und direk im Dokument darzustellen, allerdings geht dies über den direkten Weg, sondern es muss zuerst der Graph in einer seperaten Datei gespeichert werden, um ihn dann mit \verb#\includegraphics# im Dokument einzubinden.
+%
+Das wird allerdings nicht in dieser Ausarbeitung gezeigt, da ansonsten eine Abhängigkeit auf diese Bibliothek bestehen würde und hier nur die grundlegenen Features gezeigt werden sollen.
 
-\section{Shits and giggles}
-\begin{itemize}
-  \item funny stuff
-  \item pure latex CA
-\end{itemize}
+\section{Zusammenfassung}
+\pythontex{} bietet dem Nutzer eine sehr einfach zu verwendende Schnittstelle an um Python mit \LaTeX{} zu mischen.
+%
+Dies kann zum Beispiel verwendet werden um spezielle Grafiken zu erzeugen oder Ergebnisse von komplexen Berechnungen oder Algorithmen direkt von im Dokument gezeigten Code abhängig zu machen.
+%
+Da die Ausgabe des Python Codes einfach nur ein String ist kann man quasi alles Erzeugen was in \LaTeX{} möglich ist.
+%
+Allerdings kann das mischen von Python Code und \LaTeX{} auch als Sicherheitslücke gesehen werden, was vor allem durch das nicht voll funktionsfähige \texttt{depythontex} Programm nicht immer behoben werden kann.
+
+
+\clearpage
 
 \bibliographystyle{plain}
-\bibliography{\jobname{}}
-\todo{referenzen}
+\bibliography{sem-aus}
 
 \end{document}
